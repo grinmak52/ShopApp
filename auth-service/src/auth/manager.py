@@ -4,7 +4,6 @@ from typing import Annotated, AsyncGenerator, Optional, TYPE_CHECKING
 
 from fastapi import Depends
 from fastapi_users import BaseUserManager, InvalidPasswordException, UUIDIDMixin
-from fastapi_users.db import SQLAlchemyUserDatabase
 
 from auth.dependencies import get_user_db
 from database.core.config import settings
@@ -12,6 +11,7 @@ from database.orm.models import User
 
 if TYPE_CHECKING:
     from fastapi import Request
+    from fastapi_users.db import SQLAlchemyUserDatabase
 
 log = logging.getLogger(__name__)
 
@@ -65,7 +65,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
 
 async def get_user_manager(
         user_db: Annotated[
-            SQLAlchemyUserDatabase,
+            "SQLAlchemyUserDatabase",
             Depends(get_user_db),
         ],
 ) -> AsyncGenerator[UserManager, None]:
