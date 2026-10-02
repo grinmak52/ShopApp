@@ -14,8 +14,8 @@ log = logging.getLogger(__name__)
 
 
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
-    reset_password_token_secret = settings.auth.secret
-    verification_token_secret = settings.auth.secret
+    reset_password_token_secret = settings.auth.reset_password_token_secret
+    verification_token_secret = settings.auth.verification_token_secret
 
     async def validate_password(self, password: str, user) -> None:
         if len(password) < 8:

@@ -34,7 +34,8 @@ class DatabaseConfig(BaseModel):
 
 
 class AuthConfig(BaseModel):
-    secret: str
+    reset_password_token_secret: str
+    verification_token_secret: str
     jwt_lifetime_seconds: int = 1800
     algorithm: str = "HS256"
 
