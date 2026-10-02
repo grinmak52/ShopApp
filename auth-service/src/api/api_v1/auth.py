@@ -20,4 +20,5 @@ router.include_router(
         UserRead, UserUpdate
     ),
     prefix=settings.api.v1.users,
+    tags=['Users']
 )
