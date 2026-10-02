@@ -9,11 +9,9 @@ class UserRead(schemas.BaseUser[uuid.UUID]):
     created_at: datetime
 
 
-class UserCreate(schemas.CreateUpdateDictModel):
-    email: EmailStr
-    password: str
+class UserCreate(schemas.BaseUserCreate):
+    pass
 
 
-class UserUpdate(schemas.CreateUpdateDictModel):
-    email: EmailStr | None = None
-    password: str | None = None
+class UserUpdate(schemas.BaseUserUpdate):
+    pass
