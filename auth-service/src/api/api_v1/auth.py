@@ -16,9 +16,5 @@ router.include_router(
     ),
 )
 router.include_router(
-    router=fastapi_users.get_users_router(
-        UserRead, UserUpdate
-    ),
-    prefix=settings.api.v1.users,
-    tags=['Users']
+    router=fastapi_users.get_verify_router(UserRead),
 )
