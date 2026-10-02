@@ -21,9 +21,9 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     verification_token_secret = settings.auth.verification_token_secret
 
     async def validate_password(
-        self,
-        password: str,
-        user,
+            self,
+            password: str,
+            user,
     ) -> None:
         if len(password) < 8:
             raise InvalidPasswordException(
@@ -40,33 +40,33 @@ class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
             raise InvalidPasswordException(reason="Пароль не должен содержать email")
 
     async def on_after_register(
-        self,
-        user: User,
-        request: Optional["Request"] = None,
+            self,
+            user: User,
+            request: Optional["Request"] = None,
     ):
         log.info("User %s registered", user.id)
 
     async def on_after_forgot_password(
-        self,
-        user: User,
-        token: str,
-        request: Optional["Request"] = None,
+            self,
+            user: User,
+            token: str,
+            request: Optional["Request"] = None,
     ):
         log.info("User %s forgot password", user.id)
 
     async def on_after_request_verify(
-        self,
-        user: User,
-        token: str,
-        request: Optional["Request"] = None,
+            self,
+            user: User,
+            token: str,
+            request: Optional["Request"] = None,
     ):
         log.info("Verification requested for %s", user.id)
 
 
 async def get_user_manager(
-    user_db: Annotated[
-        SQLAlchemyUserDatabase,
-        Depends(get_user_db),
-    ],
+        user_db: Annotated[
+            SQLAlchemyUserDatabase,
+            Depends(get_user_db),
+        ],
 ) -> AsyncGenerator[UserManager, None]:
     yield UserManager(user_db)
