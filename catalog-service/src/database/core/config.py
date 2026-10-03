@@ -33,6 +33,14 @@ class DatabaseConfig(BaseModel):
     }
 
 
+class AuthConfig(BaseModel):
+    secret: str
+    reset_password_token_secret: str
+    verification_token_secret: str
+    algorithm: str = "HS256"
+    audience: str = "fastapi-users:auth"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(
@@ -46,6 +54,7 @@ class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
+    auth: AuthConfig
 
 
 settings = Settings()
