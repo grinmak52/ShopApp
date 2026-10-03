@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class RunConfig(BaseModel):
     host: str = "127.0.0.1"
-    port: int = 8001
+    port: int = 8002
 
 
 class ApiV1Prefix(BaseModel):
@@ -33,17 +33,18 @@ class DatabaseConfig(BaseModel):
     }
 
 
+class RabbitConfig(BaseModel):
+    url: str = "amqp://guest:guest@localhost:5672/"
+    exchange: str = "shop.events"
+    prefetch_count: int = 10
+
+
 class AuthConfig(BaseModel):
     secret: str
     reset_password_token_secret: str
     verification_token_secret: str
     algorithm: str = "HS256"
     audience: str = "fastapi-users:auth"
-
-
-class RedisConfig(BaseModel):
-    url: str = "redis://localhost:6379/0"
-    ttl_seconds: int = 300
 
 
 class Settings(BaseSettings):
@@ -59,8 +60,8 @@ class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
+    rabbit: RabbitConfig = RabbitConfig()
     auth: AuthConfig
-    redis: RedisConfig = RedisConfig()
 
 
 settings = Settings()

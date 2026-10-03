@@ -18,12 +18,9 @@ router = APIRouter(prefix="/products", tags=["products"])
 
 @router.get("", response_model=ProductPage)
 async def list_products(
-        filters: Annotated[ProductFilters, Query()], service: ProductServiceDep
+    filters: Annotated[ProductFilters, Query()], service: ProductServiceDep
 ):
-    items, total = await service.list(filters)
-    return ProductPage(
-        items=items, total=total, limit=filters.limit, offset=filters.offset
-    )
+    return await service.list(filters)
 
 
 @router.get("/{product_id}", response_model=ProductRead)

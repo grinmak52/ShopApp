@@ -5,17 +5,21 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from api import router as api_router
-from cache.redis import redis_client
 from database.core.config import settings
 from database.orm import db_helper
+from messaging.broker import broker
+from messaging.consumers import start_consumers
 from service.exceptions import ConflictError, NotFoundError
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await broker.connect()
+    await start_consumers(broker)
     yield
+    await broker.close()
     await db_helper.dispose()
-    await redis_client.aclose()
+
 
 
 main_app = FastAPI(title="Catalog Service", lifespan=lifespan)
