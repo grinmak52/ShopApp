@@ -57,3 +57,17 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+
+  cart:
+    build: ./cart-service
+    environment:
+      APP_CONFIG__AUTH__SECRET: ${JWT_SECRET}
+      APP_CONFIG__REDIS__URL: redis://redis:6379/1
+      APP_CONFIG__CATALOG__URL: http://catalog:8000
+    ports:
+      - "8002:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+      catalog:
+        condition: service_started
