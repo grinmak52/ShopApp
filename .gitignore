@@ -118,5 +118,5 @@ dmypy.json
 .vscode
 
 #Pycharm IDE
-../.idea/
+.idea/
 media/
