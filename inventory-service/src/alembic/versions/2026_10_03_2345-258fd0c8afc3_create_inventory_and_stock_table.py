@@ -1,8 +1,8 @@
-"""create inventory tables
+"""create inventory and stock table
 
-Revision ID: 8ebdd16fd572
+Revision ID: 258fd0c8afc3
 Revises:
-Create Date: 2026-10-03 18:45:24.962734
+Create Date: 2026-10-03 23:45:23.843742
 
 """
 
@@ -12,7 +12,7 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
-revision: str = "8ebdd16fd572"
+revision: str = "258fd0c8afc3"
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -69,6 +69,7 @@ def upgrade() -> None:
             sa.Enum(
                 "PENDING",
                 "RESERVED",
+                "CONFIRMED",
                 "RELEASED",
                 "EXPIRED",
                 "FAILED",

@@ -54,3 +54,29 @@ class ReservationService:
 
         await self.session.commit()
         return ReserveResult(True)
+
+    async def confirm_order(self, order_id) -> None:
+        """Оплата прошла: окончательно списываем зарезервированное."""
+        reservations = await self.reservations.get_by_order(order_id, lock=True)
+        to_confirm = [r for r in reservations if r.status == ReservationStatus.RESERVED]
+        if not to_confirm:
+            log.info("Order %s: nothing to confirm (duplicate or unknown)", order_id)
+            return
+
+        for r in sorted(to_confirm, key=lambda r: str(r.product_id)):
+            await self.inventory.commit_sale(r.product_id, r.quantity)
+            r.status = ReservationStatus.CONFIRMED
+        await self.session.commit()
+
+    async def release_order(self, order_id) -> None:
+        """Оплата не прошла: возвращаем резерв в свободный остаток."""
+        reservations = await self.reservations.get_by_order(order_id, lock=True)
+        to_release = [r for r in reservations if r.status == ReservationStatus.RESERVED]
+        if not to_release:
+            log.info("Order %s: nothing to release (duplicate or unknown)", order_id)
+            return
+
+        for r in sorted(to_release, key=lambda r: str(r.product_id)):
+            await self.inventory.release(r.product_id, r.quantity)
+            r.status = ReservationStatus.RELEASED
+        await self.session.commit()

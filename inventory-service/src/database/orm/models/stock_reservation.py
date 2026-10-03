@@ -11,6 +11,7 @@ from database.orm.mixins import TimestampMixin, UUIDPkMixin
 class ReservationStatus(str, enum.Enum):
     PENDING = "PENDING"
     RESERVED = "RESERVED"
+    CONFIRMED = "CONFIRMED"
     RELEASED = "RELEASED"
     EXPIRED = "EXPIRED"
     FAILED = "FAILED"
