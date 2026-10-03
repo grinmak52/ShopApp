@@ -3,6 +3,11 @@ class NotFoundError(Exception):
         self.entity = entity
 
 
-class ConflictError(Exception):
+class BadRequestError(Exception):
+    def __init__(self, detail: str):
+        self.detail = detail
+
+
+class ServiceUnavailableError(Exception):
     def __init__(self, detail: str):
         self.detail = detail

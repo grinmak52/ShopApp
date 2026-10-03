@@ -15,6 +15,7 @@ bearer_scheme = HTTPBearer(auto_error=False)
 class TokenUser:
     id: uuid.UUID
     is_superuser: bool
+    token: str
 
 
 def get_current_user(
@@ -32,12 +33,8 @@ def get_current_user(
         return TokenUser(
             id=uuid.UUID(payload["sub"]),
             is_superuser=bool(payload.get("is_superuser", False)),
+            token=credentials.credentials,
         )
     except (jwt.PyJWTError, KeyError, ValueError):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid token")
 
-
-def require_admin(user: Annotated[TokenUser, Depends(get_current_user)]) -> TokenUser:
-    if not user.is_superuser:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "Admin only")
-    return user

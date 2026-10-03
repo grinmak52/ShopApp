@@ -39,6 +39,16 @@ class RabbitConfig(BaseModel):
     prefetch_count: int = 10
 
 
+class CartConfig(BaseModel):
+    url: str = "http://localhost:8002"
+    timeout: float = 3.0
+
+
+class CatalogConfig(BaseModel):
+    url: str = "http://localhost:8001"
+    timeout: float = 3.0
+
+
 class AuthConfig(BaseModel):
     secret: str
     algorithm: str = "HS256"
@@ -59,6 +69,8 @@ class Settings(BaseSettings):
     api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
     rabbit: RabbitConfig = RabbitConfig()
+    cart: CartConfig = CartConfig()
+    catalog: CatalogConfig = CatalogConfig()
     auth: AuthConfig
 
 
