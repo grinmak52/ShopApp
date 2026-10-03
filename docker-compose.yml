@@ -1,0 +1,59 @@
+services:
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  auth:
+    build: ./auth-service
+    environment:
+      APP_CONFIG__DB__URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@host.docker.internal:5432/shop_user
+      APP_CONFIG__AUTH__SECRET: ${JWT_SECRET}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8000:8000"
+
+  catalog:
+    build: ./catalog-service
+    environment:
+      APP_CONFIG__DB__URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@host.docker.internal:5432/shop_catalog
+      APP_CONFIG__AUTH__SECRET: ${JWT_SECRET}
+      APP_CONFIG__REDIS__URL: redis://redis:6379/0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8001:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  inventory:
+    build: ./inventory-service
+    environment:
+      APP_CONFIG__DB__URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@host.docker.internal:5432/shop_inventory
+      APP_CONFIG__AUTH__SECRET: ${JWT_SECRET}
+      APP_CONFIG__RABBIT__URL: amqp://guest:guest@rabbitmq:5672/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8004:8000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy

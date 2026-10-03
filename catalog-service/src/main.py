@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     await redis_client.aclose()
 
 
-main_app = FastAPI(title="Catalog Service", lifespan=lifespan)
+main_app = FastAPI(lifespan=lifespan)
 main_app.include_router(api_router)
 
 
