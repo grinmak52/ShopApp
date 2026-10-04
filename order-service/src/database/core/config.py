@@ -55,6 +55,11 @@ class AuthConfig(BaseModel):
     audience: str = "fastapi-users:auth"
 
 
+class SagaConfig(BaseModel):
+    pending_timeout_seconds: int = 900
+    scan_interval_seconds: int = 30
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(
@@ -72,6 +77,7 @@ class Settings(BaseSettings):
     cart: CartConfig = CartConfig()
     catalog: CatalogConfig = CatalogConfig()
     auth: AuthConfig
+    saga: SagaConfig = SagaConfig()
 
 
 settings = Settings()

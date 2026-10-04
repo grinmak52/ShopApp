@@ -80,3 +80,11 @@ class ReservationService:
             await self.inventory.release(r.product_id, r.quantity)
             r.status = ReservationStatus.RELEASED
         await self.session.commit()
+
+    async def expire_stale(self, ttl_seconds: int) -> int:
+        stale = await self.reservations.get_stale_reserved(ttl_seconds)
+        for r in sorted(stale, key=lambda r: str(r.product_id)):
+            await self.inventory.release(r.product_id, r.quantity)
+            r.status = ReservationStatus.EXPIRED
+        await self.session.commit()
+        return len(stale)

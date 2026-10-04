@@ -22,3 +22,6 @@ class MockPaymentProvider:
         if random.random() < settings.payment.success_rate:
             return ChargeResult(True, transaction_id=f"mock_{uuid.uuid4().hex}")
         return ChargeResult(False, reason="card declined")
+
+    async def refund(self, order_id: uuid.UUID, amount: Decimal) -> None:
+        await asyncio.sleep(settings.payment.delay_seconds)

@@ -1,6 +1,7 @@
+import asyncio
+import uvicorn
 from contextlib import asynccontextmanager
 
-import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
@@ -10,13 +11,18 @@ from database.orm import db_helper
 from messaging.broker import broker
 from messaging.consumers import start_consumers
 from service.exceptions import ConflictError, NotFoundError
+from workers.expiration import run_expiration_worker
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await broker.connect()
     await start_consumers(broker)
+    worker = asyncio.create_task(run_expiration_worker())
     yield
+    worker.cancel()
+    with contextlib.suppress(asyncio.CancelledError):
+        await worker
     await broker.close()
     await db_helper.dispose()
 

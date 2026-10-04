@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -13,6 +14,7 @@ from database.orm.db_helper import db_helper
 from messaging.broker import broker
 from messaging.consumers import start_consumers
 from service.exceptions import BadRequestError, NotFoundError, ServiceUnavailableError
+from workers.timeouts import run_timeout_worker
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,7 +23,11 @@ logging.basicConfig(level=logging.INFO)
 async def lifespan(app: FastAPI):
     await broker.connect()
     await start_consumers(broker)
+    worker = asyncio.create_task(run_timeout_worker())
     yield
+    worker.cancel()
+    with contextlib.suppress(asyncio.CancelledError):
+        await worker
     await broker.close()
     await cart_client.close()
     await catalog_client.close()

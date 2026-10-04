@@ -1,4 +1,5 @@
 import uuid
+from datetime import timedelta
 
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -52,3 +53,15 @@ class OrderRepository:
         user_id = result.scalar_one_or_none()
         await self.session.commit()
         return user_id
+
+    async def get(self, order_id: uuid.UUID) -> Order | None:
+        return await self.session.get(Order, order_id)
+
+    async def find_stale_pending(self, older_than_seconds: int, limit: int = 100) -> list[uuid.UUID]:
+        threshold = func.now() - timedelta(seconds=older_than_seconds)
+        rows = await self.session.scalars(
+            select(Order.id)
+            .where(Order.status == OrderStatus.PENDING, Order.created_at < threshold)
+            .limit(limit)
+        )
+        return list(rows)

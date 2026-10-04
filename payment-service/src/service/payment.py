@@ -37,3 +37,10 @@ class PaymentService:
         except IntegrityError:
             await self.repo.session.rollback()
             return await self.repo.get_by_order(event.order_id)
+
+    async def refund(self, order_id: uuid.UUID):
+        row = await self.repo.refund_succeeded(order_id)
+        if row is None:
+            return None  # платежа нет или он не был успешным
+        await self.provider.refund(order_id, row.amount)
+        return row

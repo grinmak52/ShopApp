@@ -1,6 +1,7 @@
 import uuid
+from datetime import timedelta
 
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.orm.models import ReservationStatus, StockReservation
@@ -27,3 +28,18 @@ class ReservationRepository:
                 status=status,
             )
         )
+
+    async def get_stale_reserved(self, ttl_seconds: int, limit: int = 100) -> list[StockReservation]:
+        threshold = func.now() - timedelta(seconds=ttl_seconds)
+        query = (
+            select(StockReservation)
+            .where(
+                StockReservation.status == ReservationStatus.RESERVED,
+                StockReservation.created_at < threshold,
+            )
+            .order_by(StockReservation.created_at)
+            .limit(limit)
+            .with_for_update(skip_locked=True)
+        )
+        return list(await self.session.scalars(query))
+

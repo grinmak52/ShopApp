@@ -12,20 +12,29 @@ from messaging.events import (
     PaymentSucceeded,
     StockReservationFailed,
     StockReserved,
+    OrderCancelled,
 )
 from service.reservation import ReservationService
 
 log = logging.getLogger(__name__)
 
 ORDER_CREATED_QUEUE = "inventory.order_created"
+ORDER_CANCELLED_QUEUE = "inventory.order_cancelled"
 PAYMENT_SUCCEEDED_QUEUE = "inventory.payment_succeeded"
 PAYMENT_FAILED_QUEUE = "inventory.payment_failed"
 
 
+async def handle_order_cancelled(message: AbstractIncomingMessage) -> None:
+    async def action(service: ReservationService, event: OrderCancelled) -> None:
+        await service.release_order(event.order_id)
+
+    await _process(message, OrderCancelled, action)
+
+
 async def _process(
-    message: AbstractIncomingMessage,
-    model: type[BaseModel],
-    action: Callable[[ReservationService, BaseModel], Awaitable[None]],
+        message: AbstractIncomingMessage,
+        model: type[BaseModel],
+        action: Callable[[ReservationService, BaseModel], Awaitable[None]],
 ) -> None:
     try:
         event = model.model_validate_json(message.body)
@@ -83,6 +92,7 @@ async def handle_payment_failed(message: AbstractIncomingMessage) -> None:
 async def start_consumers(b: Broker) -> None:
     bindings = [
         (ORDER_CREATED_QUEUE, "order.created", handle_order_created),
+        (ORDER_CANCELLED_QUEUE, "order.cancelled", handle_order_cancelled),
         (PAYMENT_SUCCEEDED_QUEUE, "payment.succeeded", handle_payment_succeeded),
         (PAYMENT_FAILED_QUEUE, "payment.failed", handle_payment_failed),
     ]

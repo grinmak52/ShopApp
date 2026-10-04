@@ -45,6 +45,11 @@ class AuthConfig(BaseModel):
     audience: str = "fastapi-users:auth"
 
 
+class ReservationConfig(BaseModel):
+    ttl_seconds: int = 1200
+    scan_interval_seconds: int = 60
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(
@@ -60,6 +65,7 @@ class Settings(BaseSettings):
     db: DatabaseConfig
     rabbit: RabbitConfig = RabbitConfig()
     auth: AuthConfig
+    reservation: ReservationConfig = ReservationConfig()
 
 
 settings = Settings()

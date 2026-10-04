@@ -23,3 +23,14 @@ class PaymentFailed(BaseModel):
     order_id: uuid.UUID
     user_id: uuid.UUID
     reason: str
+
+
+class OrderCancelled(BaseModel):
+    order_id: uuid.UUID
+
+
+class PaymentRefunded(BaseModel):
+    event_id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    order_id: uuid.UUID
+    user_id: uuid.UUID
+    amount: Decimal

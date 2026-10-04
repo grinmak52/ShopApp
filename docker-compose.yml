@@ -50,6 +50,7 @@ services:
       APP_CONFIG__DB__URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@host.docker.internal:5432/shop_inventory
       APP_CONFIG__AUTH__SECRET: ${JWT_SECRET}
       APP_CONFIG__RABBIT__URL: amqp://guest:guest@rabbitmq:5672/
+      APP_CONFIG__RESERVATION__TTL_SECONDS: ${RESERVATION_TTL:-1200}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
@@ -80,6 +81,7 @@ services:
       APP_CONFIG__RABBIT__URL: amqp://guest:guest@rabbitmq:5672/
       APP_CONFIG__CART__URL: http://cart:8000
       APP_CONFIG__CATALOG__URL: http://catalog:8000
+      APP_CONFIG__SAGA__PENDING_TIMEOUT_SECONDS: ${ORDER_PENDING_TIMEOUT:-900}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
