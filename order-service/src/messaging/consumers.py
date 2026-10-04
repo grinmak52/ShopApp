@@ -28,7 +28,7 @@ async def _process(
 
     try:
         async with db_helper.session_factory() as session:
-            await action(OrderSagaService(OrderRepository(session)), broker)
+            await action(OrderSagaService(OrderRepository(session), broker), event)
     except Exception:
         log.exception("Failed to process %s, requeue", model.__name__)
         await asyncio.sleep(5)
