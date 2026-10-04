@@ -91,3 +91,18 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_healthy
+
+  payment:
+    build: ./payment-service
+    environment:
+      APP_CONFIG__DB__URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@host.docker.internal:5432/shop_payment
+      APP_CONFIG__AUTH__SECRET: ${JWT_SECRET}
+      APP_CONFIG__RABBIT__URL: amqp://guest:guest@rabbitmq:5672/
+      APP_CONFIG__PAYMENT__SUCCESS_RATE: ${PAYMENT_SUCCESS_RATE:-1}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8005:8000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy

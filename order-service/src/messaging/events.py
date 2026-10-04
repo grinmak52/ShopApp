@@ -15,3 +15,22 @@ class OrderCreated(BaseModel):
     user_id: uuid.UUID
     total_price: Decimal
     items: list[OrderEventItem]
+
+
+class StockReservationFailed(BaseModel):
+    event_id: uuid.UUID
+    order_id: uuid.UUID
+    reason: str
+
+
+class PaymentSucceeded(BaseModel):
+    event_id: uuid.UUID
+    order_id: uuid.UUID
+    user_id: uuid.UUID
+    amount: Decimal
+
+
+class PaymentFailed(BaseModel):
+    event_id: uuid.UUID
+    order_id: uuid.UUID
+    reason: str

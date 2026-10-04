@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.orm.models import Order, OrderStatus
@@ -39,3 +39,14 @@ class OrderRepository:
     async def set_status(self, order: Order, status: OrderStatus) -> None:
         order.status = status
         await self.session.commit()
+
+    async def transition_from_pending(
+        self, order_id: uuid.UUID, new_status: OrderStatus
+    ) -> bool:
+        result = await self.session.execute(
+            update(Order)
+            .where(Order.id == order_id, Order.status == OrderStatus.PENDING)
+            .values(status=new_status)
+        )
+        await self.session.commit()
+        return result.rowcount == 1

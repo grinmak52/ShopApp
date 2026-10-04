@@ -11,6 +11,7 @@ from clients.catalog import catalog_client
 from database.core.config import settings
 from database.orm.db_helper import db_helper
 from messaging.broker import broker
+from messaging.consumers import start_consumers
 from service.exceptions import BadRequestError, NotFoundError, ServiceUnavailableError
 
 logging.basicConfig(level=logging.INFO)
@@ -19,6 +20,7 @@ logging.basicConfig(level=logging.INFO)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await broker.connect()
+    await start_consumers(broker)
     yield
     await broker.close()
     await cart_client.close()
