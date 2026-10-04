@@ -6,7 +6,7 @@ from aio_pika.abc import AbstractIncomingMessage
 from pydantic import BaseModel, ValidationError
 
 from database.orm.db_helper import db_helper
-from messaging.broker import Broker
+from messaging.broker import Broker, broker
 from messaging.events import PaymentFailed, PaymentSucceeded, StockReservationFailed
 from repositories.order import OrderRepository
 from service.saga import OrderSagaService
@@ -28,7 +28,7 @@ async def _process(
 
     try:
         async with db_helper.session_factory() as session:
-            await action(OrderSagaService(OrderRepository(session)), event)
+            await action(OrderSagaService(OrderRepository(session)), broker)
     except Exception:
         log.exception("Failed to process %s, requeue", model.__name__)
         await asyncio.sleep(5)

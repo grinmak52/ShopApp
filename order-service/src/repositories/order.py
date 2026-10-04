@@ -41,12 +41,14 @@ class OrderRepository:
         await self.session.commit()
 
     async def transition_from_pending(
-        self, order_id: uuid.UUID, new_status: OrderStatus
-    ) -> bool:
+            self, order_id: uuid.UUID, new_status: OrderStatus
+    ) -> uuid.UUID | None:
         result = await self.session.execute(
             update(Order)
             .where(Order.id == order_id, Order.status == OrderStatus.PENDING)
             .values(status=new_status)
+            .returning(Order.user_id)
         )
+        user_id = result.scalar_one_or_none()
         await self.session.commit()
-        return result.rowcount == 1
+        return user_id

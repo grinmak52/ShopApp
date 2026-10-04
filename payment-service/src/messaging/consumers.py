@@ -42,6 +42,7 @@ async def handle_stock_reserved(message: AbstractIncomingMessage) -> None:
                 "payment.failed",
                 PaymentFailed(
                     order_id=payment.order_id,
+                    user_id=payment.user_id,
                     reason=payment.failure_reason or "payment failed",
                 ),
             )

@@ -17,6 +17,19 @@ class OrderCreated(BaseModel):
     items: list[OrderEventItem]
 
 
+class OrderConfirmed(BaseModel):
+    event_id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    order_id: uuid.UUID
+    user_id: uuid.UUID
+
+
+class OrderCancelled(BaseModel):
+    event_id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    order_id: uuid.UUID
+    user_id: uuid.UUID
+    reason: str
+
+
 class StockReservationFailed(BaseModel):
     event_id: uuid.UUID
     order_id: uuid.UUID

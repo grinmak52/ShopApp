@@ -21,4 +21,5 @@ class PaymentSucceeded(BaseModel):
 class PaymentFailed(BaseModel):
     event_id: uuid.UUID = Field(default_factory=uuid.uuid4)
     order_id: uuid.UUID
+    user_id: uuid.UUID
     reason: str
