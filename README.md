@@ -164,7 +164,7 @@ UPDATE users SET is_superuser = true WHERE email = 'admin@example.com';
 
 | Группа | Основные маршруты | Доступ |
 |---|---|---|
-| Auth | `POST /auth/register`, `POST /auth/jwt/login`, `GET/PATCH /auth/users/me` | публично / пользователь |
+| Auth | `POST /auth/register`, `POST /auth/login`, `GET/PATCH /users/me` | публично / пользователь |
 | Catalog | `GET /products`, `GET /products/{id}`, `GET /categories` | публично |
 | Catalog (запись) | `POST/PATCH/DELETE /products`, `/categories` | администратор |
 | Cart | `GET/DELETE /cart`, `POST /cart/items`, `PATCH/DELETE /cart/items/{product_id}` | пользователь |
