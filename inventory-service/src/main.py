@@ -21,7 +21,7 @@ async def lifespan(app: FastAPI):
     worker = asyncio.create_task(run_expiration_worker())
     yield
     worker.cancel()
-    with contextlib.suppress(asyncio.CancelledError):
+    with suppress(asyncio.CancelledError):
         await worker
     await broker.close()
     await db_helper.dispose()

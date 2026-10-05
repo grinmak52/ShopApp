@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import contextlib
 from contextlib import asynccontextmanager, suppress
 
 import uvicorn
@@ -27,7 +26,7 @@ async def lifespan(app: FastAPI):
     worker = asyncio.create_task(run_timeout_worker())
     yield
     worker.cancel()
-    with contextlib.suppress(asyncio.CancelledError):
+    with suppress(asyncio.CancelledError):
         await worker
     await broker.close()
     await cart_client.close()
