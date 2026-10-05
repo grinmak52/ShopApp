@@ -16,7 +16,7 @@ async def run_timeout_worker() -> None:
         try:
             async with db_helper.session_factory() as session:
                 repo = OrderRepository(session)
-                saga = OrderSagaService(repo, broker)
+                saga = OrderSagaService(repo, broker)  # без cart_client
                 for order_id in await repo.find_stale_pending(cfg.pending_timeout_seconds):
                     await saga.cancel(order_id, "order timed out")
         except asyncio.CancelledError:

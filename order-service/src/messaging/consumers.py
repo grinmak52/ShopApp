@@ -7,7 +7,12 @@ from pydantic import BaseModel, ValidationError
 
 from database.orm.db_helper import db_helper
 from messaging.broker import Broker, broker
-from messaging.events import PaymentFailed, PaymentSucceeded, StockReservationFailed
+from messaging.events import (
+    PaymentFailed,
+    PaymentSucceeded,
+    StockReservationExpired,
+    StockReservationFailed,
+)
 from repositories.order import OrderRepository
 from service.saga import OrderSagaService
 
@@ -45,6 +50,13 @@ async def handle_stock_failed(message: AbstractIncomingMessage) -> None:
     await _process(message, StockReservationFailed, action)
 
 
+
+async def handle_stock_expired(message: AbstractIncomingMessage) -> None:
+    async def action(service: OrderSagaService, event: StockReservationExpired) -> None:
+        await service.cancel(event.order_id, f"stock: {event.reason}")
+
+    await _process(message, StockReservationExpired, action)
+
 async def handle_payment_succeeded(message: AbstractIncomingMessage) -> None:
     async def action(service: OrderSagaService, event: PaymentSucceeded) -> None:
         await service.confirm(event.order_id)
@@ -62,6 +74,7 @@ async def handle_payment_failed(message: AbstractIncomingMessage) -> None:
 async def start_consumers(b: Broker) -> None:
     bindings = [
         ("order.stock_reservation_failed", "stock.reservation_failed", handle_stock_failed),
+        ("order.stock_reservation_expired", "stock.reservation_expired", handle_stock_expired),
         ("order.payment_succeeded", "payment.succeeded", handle_payment_succeeded),
         ("order.payment_failed", "payment.failed", handle_payment_failed),
     ]

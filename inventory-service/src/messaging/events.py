@@ -45,3 +45,9 @@ class PaymentFailed(BaseModel):
     event_id: uuid.UUID
     order_id: uuid.UUID
     reason: str
+
+
+class StockReservationExpired(BaseModel):
+    event_id: uuid.UUID = Field(default_factory=uuid.uuid4)
+    order_id: uuid.UUID
+    reason: str = "reservation expired"

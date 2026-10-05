@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class RunConfig(BaseModel):
     host: str = "127.0.0.1"
-    port: int = 8002
+    port: int = 8003
 
 
 class ApiV1Prefix(BaseModel):
@@ -69,6 +69,7 @@ class Settings(BaseSettings):
         case_sensitive=False,
         env_nested_delimiter="__",
         env_prefix="APP_CONFIG__",
+        extra="ignore",
     )
     run: RunConfig = RunConfig()
     api: ApiPrefix = ApiPrefix()

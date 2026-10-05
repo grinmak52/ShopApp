@@ -1,7 +1,6 @@
 import asyncio
 import uvicorn
-import contextlib
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse

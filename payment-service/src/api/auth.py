@@ -29,6 +29,7 @@ def get_current_user(
             settings.auth.secret,
             algorithms=[settings.auth.algorithm],
             audience=settings.auth.audience,
+            options={"require": ["exp", "sub"]},
         )
         return TokenUser(
             id=uuid.UUID(payload["sub"]),
